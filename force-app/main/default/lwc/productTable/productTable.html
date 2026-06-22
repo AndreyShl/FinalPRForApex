@@ -1,0 +1,87 @@
+<template>
+<div class="slds-is-relative">
+    <lightning-card title="Products">
+
+        <div class="slds-m-bottom_small slds-p-horizontal_small">
+            <lightning-input type="search" label="Search Products" onchange={handleSearchKeyChange}></lightning-input>
+            <lightning-button label="New" variant="brand" class="slds-m-top_small" onclick={openForm}></lightning-button>
+        </div>
+
+
+        <template if:true={showForm}>
+            <lightning-card title={formTitle} class="slds-m-bottom_small slds-p-around_small">
+                <div class="slds-grid slds-wrap">
+                    <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                        <lightning-input label="Name" name="Name" value={productRecord.Name} onchange={handleInputChange} required></lightning-input>
+                        <lightning-input type="number" label="Amount" name="Amount__c" value={productRecord.Amount__c} onchange={handleInputChange}></lightning-input>
+                        <lightning-input type="number" label="Price" name="Price__c" value={productRecord.Price__c} onchange={handleInputChange} required></lightning-input>
+                        <lightning-combobox label="Product Type" name="ProductType__c" value={productRecord.ProductType__c} options={productTypeOptions} onchange={handleInputChange}></lightning-combobox>
+                        <lightning-input type="date" label="Release Date" name="ReleaseDate__c" value={productRecord.ReleaseDate__c} onchange={handleInputChange}></lightning-input>
+                        <lightning-input type="checkbox" label="Available" name="Available__c" checked={productRecord.Available__c} onchange={handleInputChange}></lightning-input>
+                        <lightning-textarea label="Description" name="Description__c" value={productRecord.Description__c} onchange={handleInputChange}></lightning-textarea>
+                    </div>
+                </div>
+
+                <div class="slds-m-top_small">
+                    <lightning-button label="Save" variant="brand" onclick={handleSave}></lightning-button>
+                    <lightning-button label="Cancel" variant="neutral" onclick={handleCancel}></lightning-button>
+                </div>
+            </lightning-card>
+        </template>
+
+
+        <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+            <thead>
+                <tr>
+                    <th data-field="Name" onclick={handleSort}>Name</th>
+                    <th data-field="Amount__c" onclick={handleSort}>Amount</th>
+                    <th data-field="Price__c" onclick={handleSort}>Price</th>
+                    <th data-field="ProductType__c" onclick={handleSort}>Type</th>
+                    <th data-field="ReleaseDate__c" onclick={handleSort}>Release Date</th>
+                    <th data-field="Available__c" onclick={handleSort}>Available</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <template for:each={paginatedProducts} for:item="product">
+                    <tr key={product.Id}>
+                        <td>{product.Name}</td>
+                        <td>{product.Amount__c}</td>
+                        <td>{product.Price__c}</td>
+                        <td>{product.ProductType__c}</td>
+                        <td>{product.ReleaseDate__c}</td>
+                        <td>{product.Available__c}</td>
+                        <td>
+                            <lightning-button-icon icon-name="utility:edit" data-id={product.Id} onclick={handleEdit}></lightning-button-icon>
+                            <lightning-button-icon icon-name="utility:delete" data-id={product.Id} onclick={handleDelete}></lightning-button-icon>
+                        </td>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+
+
+        <lightning-combobox
+            label="Records per page"
+            value={pageSize}
+            options={pageSizeOptions}
+            onchange={handlePageSizeChange}
+            class="slds-m-top_small">
+        </lightning-combobox>
+
+        <div class="slds-m-top_small slds-align_absolute-center">
+            <lightning-button label="Prev" onclick={handlePrev} disabled={isFirstPage}></lightning-button>
+            <span class="slds-m-horizontal_small">
+                Page {currentPage} of {totalPages}
+            </span>
+            <lightning-button label="Next" onclick={handleNext} disabled={isLastPage}></lightning-button>
+        </div>
+
+    </lightning-card>
+
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Loading" size="medium" variant="brand"></lightning-spinner>
+        </template>
+    </div>
+</template>
